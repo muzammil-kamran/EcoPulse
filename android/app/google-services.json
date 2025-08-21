@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "541179908925",
+    "project_id": "ecopulsedb1",
+    "storage_bucket": "ecopulsedb1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:541179908925:android:8eebb092cd4cfb9b302b54",
+        "android_client_info": {
+          "package_name": "com.ecopulse.ecopulse"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAEQmxaznUqYhY2pBXGPPSnUNZUeFyjjqo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
