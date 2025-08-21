@@ -1,5 +1,6 @@
-import 'package:ecopulse/Screen/Admin/EducationalContent/BlogContent/123.dart';
 import 'package:ecopulse/Screen/Admin/EducationalContent/BlogContent/BlogAdd.dart';
+import 'package:ecopulse/Screen/Admin/AdminHomeScreen.dart';
+import 'package:ecopulse/Screen/Auth/LoginScreen.dart';
 import 'package:ecopulse/Screen/Auth/SignupScreen.dart';
 import 'package:ecopulse/Screen/User/HomeScreen.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const AddBlog1(),
+      home: const AdminHomescreen(),
     );
   }
 }

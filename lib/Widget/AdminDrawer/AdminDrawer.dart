@@ -1,5 +1,7 @@
 import 'package:ecopulse/Screen/Admin/AdminHomeScreen.dart';
+import 'package:ecopulse/Screen/Admin/EducationalContent/BlogContent/Blogs.dart';
 import 'package:ecopulse/Screen/Admin/EducationalContent/BlogContent/BlogAdd.dart';
+import 'package:ecopulse/Screen/Admin/EducationalContent/VideoContent/VideoBlog.dart';
 import 'package:ecopulse/Screen/Auth/LoginScreen.dart';
 import 'package:ecopulse/Widget/User%20Draw/UserDrawer.dart';
 import 'package:flutter/material.dart';
@@ -22,8 +24,8 @@ class _AdmindrawerState extends State<Admindrawer> {
           const DrawerHeader(
             decoration: BoxDecoration(color: Colors.green),
             child: Text("EcoPulse"),
-            ),
-            ListTile(
+          ),
+          ListTile(
             title: Text("Dashboard"),
             onTap: () {
               Navigator.push(
@@ -32,19 +34,37 @@ class _AdmindrawerState extends State<Admindrawer> {
               );
             },
           ),
-          
 
           ListTile(
-            leading: Icon(Icons.logout),
-            title: Text("ADD Blog"),
-
-            onTap: () async{
-
+            leading: Icon(Icons.video_library),
+            title: Text("Educational Content"),
+            onTap: () async {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => AddBlog(),
+                  builder: (context) => EducationalVideosSreen(),
                 ),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.book),
+            title: Text("Blog"),
+            onTap: () async {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => BlogsSreen()),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.add),
+            title: Text("ADD Blog"),
+
+            onTap: () async {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => AddBlog()),
               );
             },
           ),
@@ -53,15 +73,13 @@ class _AdmindrawerState extends State<Admindrawer> {
             leading: Icon(Icons.logout),
             title: Text("LogOut"),
 
-            onTap: () async{
+            onTap: () async {
               var pref = await SharedPreferences.getInstance();
               pref.clear();
 
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => Loginscreen(),
-                ),
+                MaterialPageRoute(builder: (context) => Loginscreen()),
               );
             },
           ),
