@@ -147,7 +147,7 @@ class _AddVideoBlogState extends State<AddVideoBlog> {
                 TextField(
                   controller: VideoBlogTitleController,
                   decoration: InputDecoration(
-                    labelText: 'Blog Title',
+                    labelText: 'Educational Video Title',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -160,7 +160,7 @@ class _AddVideoBlogState extends State<AddVideoBlog> {
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
                   decoration: InputDecoration(
-                    labelText: 'Blog Content',
+                    labelText: 'Educational Video Discription',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),

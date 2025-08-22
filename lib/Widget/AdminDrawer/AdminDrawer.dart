@@ -35,38 +35,34 @@ class _AdmindrawerState extends State<Admindrawer> {
             },
           ),
 
-          ListTile(
-            leading: Icon(Icons.video_library),
-            title: Text("Educational Content"),
-            onTap: () async {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => EducationalVideosSreen(),
-                ),
-              );
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.book),
-            title: Text("Blog"),
-            onTap: () async {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => BlogsSreen()),
-              );
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.add),
-            title: Text("ADD Blog"),
-
-            onTap: () async {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => AddBlog()),
-              );
-            },
+          // Educational Content
+          ExpansionTile(
+            leading: const Icon(Icons.menu_book),
+            title: const Text("Educational Content"),
+            children: [
+              ListTile(
+                leading: const Icon(Icons.video_library),
+                title: const Text("  Educational Videos"),
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const EducationalVideosSreen(),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.book),
+                title: const Text("  Blogs"),
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const BlogsSreen()),
+                  );
+                },
+              ),
+            ],
           ),
 
           ListTile(
