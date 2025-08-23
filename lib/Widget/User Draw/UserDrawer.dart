@@ -1,4 +1,5 @@
 import 'package:ecopulse/Screen/Auth/LoginScreen.dart';
+import 'package:ecopulse/Screen/User/Challenges/UserChallengesScreen.dart';
 import 'package:ecopulse/Screen/User/HomeScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,9 +20,10 @@ class _UserdrawerState extends State<Userdrawer> {
         children: [
           const DrawerHeader(
             decoration: BoxDecoration(color: Colors.green),
-            child: Text("EcoPulse"),),
-            
-            ListTile(
+            child: Text("EcoPulse"),
+          ),
+
+          ListTile(
             title: Text("Dashboard"),
             onTap: () {
               Navigator.push(
@@ -31,18 +33,25 @@ class _UserdrawerState extends State<Userdrawer> {
             },
           ),
           ListTile(
+            title: Text("Challenges"),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => UserChallengeScreen()),
+              );
+            },
+          ),
+          ListTile(
             leading: Icon(Icons.logout),
             title: Text("LogOut"),
 
-            onTap: () async{
+            onTap: () async {
               var pref = await SharedPreferences.getInstance();
               pref.clear();
 
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => Loginscreen(),
-                ),
+                MaterialPageRoute(builder: (context) => Loginscreen()),
               );
             },
           ),

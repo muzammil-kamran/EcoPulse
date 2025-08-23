@@ -2,6 +2,7 @@ import 'package:ecopulse/Screen/Admin/AdminHomeScreen.dart';
 import 'package:ecopulse/Screen/Admin/EducationalContent/BlogContent/Blogs.dart';
 import 'package:ecopulse/Screen/Admin/EducationalContent/BlogContent/BlogAdd.dart';
 import 'package:ecopulse/Screen/Admin/EducationalContent/VideoContent/VideoBlog.dart';
+import 'package:ecopulse/Screen/Admin/Sustainable%20Challenges/challenges.dart';
 import 'package:ecopulse/Screen/Auth/LoginScreen.dart';
 import 'package:ecopulse/Widget/User%20Draw/UserDrawer.dart';
 import 'package:flutter/material.dart';
@@ -65,6 +66,18 @@ class _AdmindrawerState extends State<Admindrawer> {
             ],
           ),
 
+          ListTile(
+            leading: const Icon(Icons.fitness_center),
+            title: const Text("Chaleenges"),
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ChallengeManagementScreen(),
+                ),
+              );
+            },
+          ),
           ListTile(
             leading: Icon(Icons.logout),
             title: Text("LogOut"),
