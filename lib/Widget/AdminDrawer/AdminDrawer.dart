@@ -1,7 +1,9 @@
 import 'package:ecopulse/Screen/Admin/AdminHomeScreen.dart';
+import 'package:ecopulse/Screen/Admin/Eco-TravelSuggestion/Eco-trravelSuggestionScreen.dart';
 import 'package:ecopulse/Screen/Admin/EducationalContent/BlogContent/Blogs.dart';
 import 'package:ecopulse/Screen/Admin/EducationalContent/BlogContent/BlogAdd.dart';
 import 'package:ecopulse/Screen/Admin/EducationalContent/VideoContent/VideoBlog.dart';
+import 'package:ecopulse/Screen/Admin/Categories/Category.dart';
 import 'package:ecopulse/Screen/Admin/Sustainable%20Challenges/challenges.dart';
 import 'package:ecopulse/Screen/Auth/LoginScreen.dart';
 import 'package:ecopulse/Widget/User%20Draw/UserDrawer.dart';
@@ -74,6 +76,32 @@ class _AdmindrawerState extends State<Admindrawer> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => const ChallengeManagementScreen(),
+                ),
+              );
+            },
+          ),
+
+          ListTile(
+            leading: const Icon(Icons.fitness_center),
+            title: const Text("Catedories"),
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ManageCategoriesScreen(),
+                ),
+              );
+            },
+          ),
+
+          ListTile(
+            leading: const Icon(Icons.settings_suggest),
+            title: const Text("Eco freindly Suggestion"),
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ManageSuggestionsScreen(),
                 ),
               );
             },
