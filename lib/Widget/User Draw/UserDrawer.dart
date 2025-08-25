@@ -1,6 +1,7 @@
 import 'package:ecopulse/Screen/Admin/Eco-TravelSuggestion/Eco-TravelSuggestionAdd.dart';
 import 'package:ecopulse/Screen/Admin/Eco-TravelSuggestion/Eco-TravelSuggestionEditSceen.dart';
 import 'package:ecopulse/Screen/Auth/LoginScreen.dart';
+import 'package:ecopulse/Screen/User/Trackers/Carbon%20FootPrint%20Tracker/footprint%20.dart';
 import 'package:ecopulse/Screen/User/Challenges/UserChallengesScreen.dart';
 import 'package:ecopulse/Screen/User/Eco-travel%20Suggestion/UserEco-TravelSuggestionsScreen.dart';
 import 'package:ecopulse/Screen/User/HomeScreen.dart';
@@ -54,6 +55,16 @@ class _UserdrawerState extends State<Userdrawer> {
                 MaterialPageRoute(
                   builder: (context) => const EcoTravelSuggestionsScreen(),
                 ),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.track_changes),
+            title: const Text("Carbon Foot Print Tracker"),
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => TrackerScreen()),
               );
             },
           ),
