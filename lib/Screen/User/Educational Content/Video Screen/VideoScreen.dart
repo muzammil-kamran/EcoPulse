@@ -53,6 +53,11 @@ class UserEducationalVideosScreen extends StatelessWidget {
                 final video = videos[index];
                 final videoData = video.data() as Map<String, dynamic>;
 
+                final title = (videoData["title"] ?? "Untitled Video")
+                    .toString();
+                final description = (videoData["description"] ?? "").toString();
+                final thumbnail = (videoData["thumbnail"] ?? "").toString();
+
                 return Card(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -79,11 +84,9 @@ class UserEducationalVideosScreen extends StatelessWidget {
                           borderRadius: const BorderRadius.vertical(
                             top: Radius.circular(16),
                           ),
-                          child:
-                              videoData["thumbnail"] != null &&
-                                  videoData["thumbnail"].toString().isNotEmpty
+                          child: thumbnail.isNotEmpty
                               ? Image.network(
-                                  videoData["thumbnail"],
+                                  thumbnail,
                                   height: 180,
                                   width: double.infinity,
                                   fit: BoxFit.cover,
@@ -108,7 +111,7 @@ class UserEducationalVideosScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                videoData["title"] ?? "Untitled Video",
+                                title,
                                 style: GoogleFonts.poppins(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
@@ -117,7 +120,7 @@ class UserEducationalVideosScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 6),
                               Text(
-                                videoData["content"] ?? "",
+                                description,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: GoogleFonts.poppins(

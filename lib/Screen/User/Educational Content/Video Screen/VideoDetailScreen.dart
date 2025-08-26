@@ -7,7 +7,7 @@ const Color kGreen = Color(0xFF1E8E3E);
 const Color kLightGreen = Color(0xFFE8F6EA);
 
 class VideoDetailScreen extends StatefulWidget {
-  final Map<String, dynamic> videoData; // videoData contains title, url, desc
+  final Map<String, dynamic> videoData;
 
   const VideoDetailScreen({super.key, required this.videoData});
 
@@ -22,7 +22,8 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.network(widget.videoData['url'])
+    final url = (widget.videoData['url'] ?? "").toString();
+    _controller = VideoPlayerController.network(url)
       ..initialize().then((_) {
         setState(() {});
         _controller.play();
@@ -50,6 +51,11 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final title = (widget.videoData['title'] ?? "Video Detail").toString();
+    final description =
+        (widget.videoData['description'] ?? "No description available.")
+            .toString();
+
     return AuthGuard(
       requiredRole: "User",
       child: Scaffold(
@@ -57,7 +63,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
         appBar: AppBar(
           backgroundColor: kGreen,
           title: Text(
-            widget.videoData['title'] ?? "Video Detail",
+            title,
             style: GoogleFonts.poppins(
               fontWeight: FontWeight.w600,
               color: Colors.white,
@@ -96,7 +102,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
-                widget.videoData['title'] ?? "",
+                title,
                 style: GoogleFonts.poppins(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -110,8 +116,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Text(
-                  widget.videoData['description'] ??
-                      "No description available.",
+                  description,
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     color: Colors.black87,

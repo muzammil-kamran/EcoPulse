@@ -37,7 +37,7 @@ class _TrackerScreenState extends State<TrackerScreen> {
       requiredRole: "User",
       child: Scaffold(
         appBar: AppBar(title: Text("Carbon Footprint Tracker")),
-        drawer: Userdrawer(),
+        // drawer: Userdrawer(),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(

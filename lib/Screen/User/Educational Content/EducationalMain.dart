@@ -1,5 +1,7 @@
 import 'package:ecopulse/Screen/User/Educational%20Content/Blog%20Screen/UserBlogScreen.dart';
 import 'package:ecopulse/Screen/User/Educational%20Content/Video%20Screen/VideoScreen.dart';
+import 'package:ecopulse/Screen/User/HomeScreen.dart';
+import 'package:ecopulse/Widget/User%20Draw/UserDrawer.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ecopulse/Screen/Auth/auth.dart';
@@ -32,7 +34,20 @@ class _EducationalMainState extends State<EducationalMain> {
           backgroundColor: kGreen,
           centerTitle: true,
           elevation: 0,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.home, color: Colors.white),
+              onPressed: () {
+                // Navigate to Home Screen
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Homescreen()),
+                );
+              },
+            ),
+          ],
         ),
+        drawer: Userdrawer(),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(

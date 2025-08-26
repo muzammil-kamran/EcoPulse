@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecopulse/Screen/Auth/auth.dart';
 import 'package:ecopulse/Screen/User/Challenges/CompletedChallengesScreen.dart';
+import 'package:ecopulse/Screen/User/HomeScreen.dart';
 import 'package:ecopulse/Widget/User%20Draw/UserDrawer.dart';
 import 'package:ecopulse/Widget/botton/botton.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +44,7 @@ class _UserChallengeScreenState extends State<UserChallengeScreen> {
           "progress": 0,
           "isCompleted": false,
           "joinedAt": DateTime.now(),
+          "lastUpdated": null, // track when user last updated
         });
   }
 
@@ -54,13 +56,41 @@ class _UserChallengeScreenState extends State<UserChallengeScreen> {
     if (userEmail == null) return;
 
     final docId = "${userEmail}_$challengeId";
+    final docRef = FirebaseFirestore.instance
+        .collection("userChallenges")
+        .doc(docId);
+
+    final snapshot = await docRef.get();
+
+    if (!snapshot.exists) return;
+
+    final data = snapshot.data()!;
+    final lastUpdated = data["lastUpdated"] != null
+        ? (data["lastUpdated"] as Timestamp).toDate()
+        : null;
+
+    final now = DateTime.now();
+
+    // ✅ Restrict updates to once per day
+    if (lastUpdated != null &&
+        lastUpdated.year == now.year &&
+        lastUpdated.month == now.month &&
+        lastUpdated.day == now.day) {
+      // Already updated today
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("You can only update once per day 🌱")),
+      );
+      return;
+    }
+
     final newProgress = currentProgress + 1;
     final isCompleted = newProgress >= duration;
 
-    await FirebaseFirestore.instance
-        .collection("userChallenges")
-        .doc(docId)
-        .update({"progress": newProgress, "isCompleted": isCompleted});
+    await docRef.update({
+      "progress": newProgress,
+      "isCompleted": isCompleted,
+      "lastUpdated": now, // update timestamp
+    });
   }
 
   void gotoCompletedChallengesScreen(BuildContext context) {
@@ -75,14 +105,29 @@ class _UserChallengeScreenState extends State<UserChallengeScreen> {
     return AuthGuard(
       requiredRole: "User",
       child: Scaffold(
-        appBar: AppBar(title: const Text("🌱 Sustainable Challenges")),
+        appBar: AppBar(
+          title: Text("🌱 Sustainable Challenges"),
+
+          backgroundColor: const Color(0xFF1E8E3E),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.home, color: Colors.white),
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Homescreen()),
+                );
+              },
+            ),
+          ],
+        ),
         drawer: Userdrawer(),
         body: userEmail == null
             ? const Center(child: CircularProgressIndicator())
             : Column(
                 children: [
                   const SizedBox(height: 10),
-                  // ✅ CustomButton for Completed Challenges
+                  // ✅ Button for Completed Challenges
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: CustomButton(
@@ -131,16 +176,56 @@ class _UserChallengeScreenState extends State<UserChallengeScreen> {
                                 final joined =
                                     userChallengeSnapshot.hasData &&
                                     userChallengeSnapshot.data!.exists;
+
+                                if (!joined) {
+                                  return Card(
+                                    margin: const EdgeInsets.all(10),
+                                    child: ListTile(
+                                      leading: imageUrl.isNotEmpty
+                                          ? Image.network(
+                                              imageUrl,
+                                              width: 60,
+                                              height: 60,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : null,
+                                      title: Text(
+                                        title,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      subtitle: Text(description),
+                                      trailing: ElevatedButton(
+                                        onPressed: () =>
+                                            joinChallenge(challengeId),
+                                        child: const Text("Join"),
+                                      ),
+                                    ),
+                                  );
+                                }
+
+                                final data =
+                                    userChallengeSnapshot.data!.data() as Map;
                                 final isCompleted =
-                                    joined &&
-                                    userChallengeSnapshot.data!['isCompleted'];
+                                    data["isCompleted"] ?? false;
+                                final progress = data["progress"] ?? 0;
+                                final lastUpdated = data["lastUpdated"] != null
+                                    ? (data["lastUpdated"] as Timestamp)
+                                          .toDate()
+                                    : null;
 
                                 // Skip completed challenges
-                                if (isCompleted) return const SizedBox.shrink();
+                                if (isCompleted) {
+                                  return const SizedBox.shrink();
+                                }
 
-                                final progress = joined
-                                    ? userChallengeSnapshot.data!['progress']
-                                    : 0;
+                                final now = DateTime.now();
+                                final updatedToday =
+                                    lastUpdated != null &&
+                                    lastUpdated.year == now.year &&
+                                    lastUpdated.month == now.month &&
+                                    lastUpdated.day == now.day;
 
                                 return Card(
                                   margin: const EdgeInsets.all(10),
@@ -160,28 +245,22 @@ class _UserChallengeScreenState extends State<UserChallengeScreen> {
                                       ),
                                     ),
                                     subtitle: Text(description),
-                                    trailing: joined
-                                        ? Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Text(
-                                                "Progress: $progress / $duration",
-                                              ),
-                                              ElevatedButton(
-                                                onPressed: () => updateProgress(
+                                    trailing: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text("Progress: $progress / $duration"),
+                                        ElevatedButton(
+                                          onPressed: updatedToday
+                                              ? null // disable if already updated
+                                              : () => updateProgress(
                                                   challengeId,
                                                   progress,
                                                   duration,
                                                 ),
-                                                child: const Text("Update"),
-                                              ),
-                                            ],
-                                          )
-                                        : ElevatedButton(
-                                            onPressed: () =>
-                                                joinChallenge(challengeId),
-                                            child: const Text("Join"),
-                                          ),
+                                          child: const Text("Update"),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 );
                               },

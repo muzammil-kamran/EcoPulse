@@ -14,8 +14,9 @@ class Signupscreen extends StatefulWidget {
 
 class _SignupscreenState extends State<Signupscreen>
     with SingleTickerProviderStateMixin {
-  final EmailControllar = TextEditingController();
-  final PassControllar = TextEditingController();
+  final NameController = TextEditingController();
+  final EmailController = TextEditingController();
+  final PassController = TextEditingController();
 
   late AnimationController _controller;
   late Animation<double> _fadeIn;
@@ -34,22 +35,24 @@ class _SignupscreenState extends State<Signupscreen>
   @override
   void dispose() {
     _controller.dispose();
-    EmailControllar.dispose();
-    PassControllar.dispose();
+    NameController.dispose();
+    EmailController.dispose();
+    PassController.dispose();
     super.dispose();
   }
 
   void signup() async {
     final user = await db
         .collection('user')
-        .where('Email', isEqualTo: EmailControllar.text)
+        .where('Email', isEqualTo: EmailController.text)
         .get();
     final userDocsList = user.docs;
 
     if (userDocsList.isEmpty) {
       await db.collection('user').add({
-        'Email': EmailControllar.text,
-        'Password': PassControllar.text,
+        'Name': NameController.text,
+        'Email': EmailController.text,
+        'Password': PassController.text,
         'Role': 'User',
       });
       ScaffoldMessenger.of(context).showSnackBar(
@@ -101,9 +104,34 @@ class _SignupscreenState extends State<Signupscreen>
                 ),
                 SizedBox(height: 40),
 
+                // Name
+                TextField(
+                  controller: NameController,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
+                    prefixIcon: Icon(Icons.person, color: kGreen),
+                    labelText: 'Name',
+                    labelStyle: TextStyle(color: kGreen),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide: BorderSide(color: kGreen),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide: BorderSide(color: kGreen.withOpacity(0.5)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide: BorderSide(color: kGreen, width: 2),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+
                 // Email
                 TextField(
-                  controller: EmailControllar,
+                  controller: EmailController,
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: Colors.white,
@@ -128,7 +156,7 @@ class _SignupscreenState extends State<Signupscreen>
 
                 // Password
                 TextField(
-                  controller: PassControllar,
+                  controller: PassController,
                   obscureText: true,
                   decoration: InputDecoration(
                     filled: true,

@@ -61,9 +61,10 @@ class _LoginscreenState extends State<Loginscreen>
         var user = userDocsList[0].data() as Map<String, dynamic>;
         var prefs = await SharedPreferences.getInstance();
         prefs.setBool("isLoggedIn", true);
+        prefs.setString("Name", user['Name']);
         prefs.setString("Email", user['Email']);
         prefs.setString("Password", user['Password']);
-        prefs.setString("Role", user['Role']); // Save role
+        prefs.setString("Role", user['Role']);
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
