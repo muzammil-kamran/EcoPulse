@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io' show File; // Only used on mobile
+import 'package:flutter/foundation.dart'; // 👈 for kIsWeb
 
 import 'package:ecopulse/Screen/Admin/EducationalContent/BlogContent/Blogs.dart';
 import 'package:ecopulse/Screen/Auth/LoginScreen.dart';
@@ -41,7 +43,9 @@ class _AddBlogState extends State<AddBlog> {
           BlogController.text.trim().isEmpty ||
           _image == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Please fill all fields and upload image")),
+          const SnackBar(
+            content: Text("Please fill all fields and upload image"),
+          ),
         );
         return;
       }
@@ -51,7 +55,7 @@ class _AddBlogState extends State<AddBlog> {
       if (imageUrl == null) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text("Image upload failed")));
+        ).showSnackBar(const SnackBar(content: Text("Image upload failed")));
         return;
       }
 
@@ -63,7 +67,7 @@ class _AddBlogState extends State<AddBlog> {
       if (email == null || role == null) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => Loginscreen()),
+          MaterialPageRoute(builder: (context) => const Loginscreen()),
         );
         return;
       }
@@ -78,20 +82,20 @@ class _AddBlogState extends State<AddBlog> {
         "userRole": role,
       });
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Blog created successfully")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Blog created successfully")),
+      );
 
       // Go to Blogs Screen
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => BlogsSreen()),
+        MaterialPageRoute(builder: (context) => const BlogsSreen()),
       );
     } catch (e) {
       print("Error creating blog: $e");
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text("Error creating blog")));
+      ).showSnackBar(const SnackBar(content: Text("Error creating blog")));
     }
   }
 
@@ -127,10 +131,12 @@ class _AddBlogState extends State<AddBlog> {
     return AuthGuard(
       requiredRole: "Admin",
       child: Scaffold(
-        appBar: AppBar(title: Center(child: Text("Add Education Blog"))),
-        body: Container(
-          padding: EdgeInsets.all(20),
+        appBar: AppBar(title: const Center(child: Text("Add Education Blog"))),
+        body: SingleChildScrollView(
+          // 👈 makes whole form scrollable
+          padding: const EdgeInsets.all(20),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextField(
                 controller: BlogTitleController,
@@ -141,13 +147,12 @@ class _AddBlogState extends State<AddBlog> {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextField(
                 controller: BlogController,
-                minLines: 3, // minimum height (1 line)
-                maxLines: null, // grow indefinitely
+                minLines: 3,
+                maxLines: null,
                 keyboardType: TextInputType.multiline,
-
                 decoration: InputDecoration(
                   labelText: 'Blog',
                   border: OutlineInputBorder(
@@ -155,21 +160,29 @@ class _AddBlogState extends State<AddBlog> {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               Container(
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 child: _image != null
-                    ? Image.network(_image!.path, width: 200)
-                    : Text("No Image elected"),
+                    ? (kIsWeb
+                          ? Image.network(
+                              _image!.path, // On web, path is a blob/url
+                              width: 200,
+                            )
+                          : Image.file(
+                              File(_image!.path), // On mobile/desktop
+                              width: 200,
+                            ))
+                    : const Text("No Image Selected"),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               CustomButton(text: "Upload Image", onPressed: PickImage),
 
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               CustomButton(text: "Create Blog", onPressed: createBlog),
 
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
             ],
           ),
         ),

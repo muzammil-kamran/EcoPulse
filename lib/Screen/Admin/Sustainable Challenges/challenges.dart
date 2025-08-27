@@ -122,7 +122,7 @@ class ChallengeManagementScreen extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(8),
                                     child: Image.network(
                                       challengeData["image"],
-                                      height: 180,
+                                      height: 300,
                                       width: double.infinity,
                                       fit: BoxFit.cover,
                                     ),

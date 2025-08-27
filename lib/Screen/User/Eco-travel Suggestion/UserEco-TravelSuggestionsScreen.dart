@@ -23,6 +23,7 @@ class _EcoTravelSuggestionsScreenState
         drawer: const Userdrawer(),
         appBar: AppBar(
           title: const Text("🌱 Eco-Travel Suggestions"),
+
           centerTitle: true,
           actions: [
             // 🔹 Fetch categories dynamically from Firestore

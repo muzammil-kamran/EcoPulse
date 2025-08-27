@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecopulse/Screen/Auth/auth.dart';
 import 'package:ecopulse/Screen/User/Challenges/CompletedChallengesScreen.dart';
+import 'package:ecopulse/Screen/User/HomeScreen.dart';
 import 'package:ecopulse/Widget/User%20Draw/UserDrawer.dart';
 import 'package:ecopulse/Widget/botton/botton.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +44,7 @@ class _UserChallengeScreenState extends State<UserChallengeScreen> {
           "progress": 0,
           "isCompleted": false,
           "joinedAt": DateTime.now(),
+          "lastUpdated": null, // track when user last updated
         });
   }
 
@@ -54,13 +56,40 @@ class _UserChallengeScreenState extends State<UserChallengeScreen> {
     if (userEmail == null) return;
 
     final docId = "${userEmail}_$challengeId";
+    final docRef = FirebaseFirestore.instance
+        .collection("userChallenges")
+        .doc(docId);
+
+    final snapshot = await docRef.get();
+
+    if (!snapshot.exists) return;
+
+    final data = snapshot.data()!;
+    final lastUpdated = data["lastUpdated"] != null
+        ? (data["lastUpdated"] as Timestamp).toDate()
+        : null;
+
+    final now = DateTime.now();
+
+    // ✅ Restrict updates to once per day
+    if (lastUpdated != null &&
+        lastUpdated.year == now.year &&
+        lastUpdated.month == now.month &&
+        lastUpdated.day == now.day) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("You can only update once per day 🌱")),
+      );
+      return;
+    }
+
     final newProgress = currentProgress + 1;
     final isCompleted = newProgress >= duration;
 
-    await FirebaseFirestore.instance
-        .collection("userChallenges")
-        .doc(docId)
-        .update({"progress": newProgress, "isCompleted": isCompleted});
+    await docRef.update({
+      "progress": newProgress,
+      "isCompleted": isCompleted,
+      "lastUpdated": now,
+    });
   }
 
   void gotoCompletedChallengesScreen(BuildContext context) {
@@ -75,14 +104,27 @@ class _UserChallengeScreenState extends State<UserChallengeScreen> {
     return AuthGuard(
       requiredRole: "User",
       child: Scaffold(
-        appBar: AppBar(title: const Text("🌱 Sustainable Challenges")),
+        appBar: AppBar(
+          title: const Text("🌱 Sustainable Challenges"),
+          backgroundColor: const Color(0xFF1E8E3E),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.home, color: Colors.white),
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Homescreen()),
+                );
+              },
+            ),
+          ],
+        ),
         drawer: Userdrawer(),
         body: userEmail == null
             ? const Center(child: CircularProgressIndicator())
             : Column(
                 children: [
                   const SizedBox(height: 10),
-                  // ✅ CustomButton for Completed Challenges
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: CustomButton(
@@ -131,57 +173,181 @@ class _UserChallengeScreenState extends State<UserChallengeScreen> {
                                 final joined =
                                     userChallengeSnapshot.hasData &&
                                     userChallengeSnapshot.data!.exists;
-                                final isCompleted =
-                                    joined &&
-                                    userChallengeSnapshot.data!['isCompleted'];
 
-                                // Skip completed challenges
-                                if (isCompleted) return const SizedBox.shrink();
-
-                                final progress = joined
-                                    ? userChallengeSnapshot.data!['progress']
-                                    : 0;
-
-                                return Card(
-                                  margin: const EdgeInsets.all(10),
-                                  child: ListTile(
-                                    leading: imageUrl.isNotEmpty
-                                        ? Image.network(
-                                            imageUrl,
-                                            width: 60,
-                                            height: 60,
-                                            fit: BoxFit.cover,
-                                          )
-                                        : null,
-                                    title: Text(
-                                      title,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
+                                // ------------------ JOIN CHALLENGE CARD ------------------
+                                if (!joined) {
+                                  return Card(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    elevation: 4,
+                                    margin: const EdgeInsets.symmetric(
+                                      vertical: 10,
+                                      horizontal: 12,
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(15),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          if (imageUrl.isNotEmpty)
+                                            ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              child: Image.network(
+                                                imageUrl,
+                                                height: 200,
+                                                width: double.infinity,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          const SizedBox(height: 10),
+                                          Text(
+                                            title,
+                                            style: const TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 6),
+                                          Text(
+                                            description,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 6),
+                                          Text(
+                                            "Duration: ${duration ?? 0} days",
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                              fontStyle: FontStyle.italic,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 10),
+                                          Align(
+                                            alignment: Alignment.centerRight,
+                                            child: ElevatedButton.icon(
+                                              onPressed: () =>
+                                                  joinChallenge(challengeId),
+                                              icon: const Icon(
+                                                Icons.playlist_add_check,
+                                              ),
+                                              label: const Text("Join"),
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.green,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    subtitle: Text(description),
-                                    trailing: joined
-                                        ? Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Text(
-                                                "Progress: $progress / $duration",
-                                              ),
-                                              ElevatedButton(
-                                                onPressed: () => updateProgress(
-                                                  challengeId,
-                                                  progress,
-                                                  duration,
-                                                ),
-                                                child: const Text("Update"),
-                                              ),
-                                            ],
-                                          )
-                                        : ElevatedButton(
-                                            onPressed: () =>
-                                                joinChallenge(challengeId),
-                                            child: const Text("Join"),
+                                  );
+                                }
+
+                                // ------------------ IN-PROGRESS CHALLENGE CARD ------------------
+                                final data =
+                                    userChallengeSnapshot.data!.data() as Map;
+                                final isCompleted =
+                                    data["isCompleted"] ?? false;
+                                final progress = data["progress"] ?? 0;
+                                final lastUpdated = data["lastUpdated"] != null
+                                    ? (data["lastUpdated"] as Timestamp)
+                                          .toDate()
+                                    : null;
+
+                                if (isCompleted) {
+                                  return const SizedBox.shrink();
+                                }
+
+                                final now = DateTime.now();
+                                final updatedToday =
+                                    lastUpdated != null &&
+                                    lastUpdated.year == now.year &&
+                                    lastUpdated.month == now.month &&
+                                    lastUpdated.day == now.day;
+
+                                return Card(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  elevation: 4,
+                                  margin: const EdgeInsets.symmetric(
+                                    vertical: 10,
+                                    horizontal: 12,
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(15),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        if (imageUrl.isNotEmpty)
+                                          ClipRRect(
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                            child: Image.network(
+                                              imageUrl,
+                                              height: 200,
+                                              width: double.infinity,
+                                              fit: BoxFit.cover,
+                                            ),
                                           ),
+                                        const SizedBox(height: 10),
+                                        Text(
+                                          title,
+                                          style: const TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 6),
+                                        Text(
+                                          description,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(fontSize: 14),
+                                        ),
+                                        const SizedBox(height: 6),
+                                        Text(
+                                          "Duration: $duration days",
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            fontStyle: FontStyle.italic,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 6),
+                                        Text(
+                                          "Progress: $progress / $duration",
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.blueGrey,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Align(
+                                          alignment: Alignment.centerRight,
+                                          child: ElevatedButton.icon(
+                                            onPressed: updatedToday
+                                                ? null
+                                                : () => updateProgress(
+                                                    challengeId,
+                                                    progress,
+                                                    duration,
+                                                  ),
+                                            icon: const Icon(Icons.update),
+                                            label: const Text("Update"),
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.blue,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 );
                               },

@@ -100,7 +100,7 @@ class BlogsSreen extends StatelessWidget {
                                       borderRadius: BorderRadius.circular(8),
                                       child: Image.network(
                                         blogData["image"],
-                                        height: 180,
+                                        height: 300,
                                         width: double.infinity,
                                         fit: BoxFit.cover,
                                       ),
