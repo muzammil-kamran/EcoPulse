@@ -87,7 +87,7 @@ class UserBlogScreen extends StatelessWidget {
                             ),
                             child: Image.network(
                               blogData["image"],
-                              height: 200,
+                              height: 300,
                               width: double.infinity,
                               fit: BoxFit.cover,
                             ),

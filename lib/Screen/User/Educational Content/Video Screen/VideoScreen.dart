@@ -55,7 +55,8 @@ class UserEducationalVideosScreen extends StatelessWidget {
 
                 final title = (videoData["title"] ?? "Untitled Video")
                     .toString();
-                final description = (videoData["description"] ?? "").toString();
+                final description = (videoData["content"] ?? "")
+                    .toString(); // FIXED
                 final thumbnail = (videoData["thumbnail"] ?? "").toString();
 
                 return Card(

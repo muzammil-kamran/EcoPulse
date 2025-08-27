@@ -22,7 +22,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
   @override
   void initState() {
     super.initState();
-    final url = (widget.videoData['url'] ?? "").toString();
+    final url = (widget.videoData['video'] ?? "").toString(); // FIXED
     _controller = VideoPlayerController.network(url)
       ..initialize().then((_) {
         setState(() {});
@@ -53,8 +53,8 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
   Widget build(BuildContext context) {
     final title = (widget.videoData['title'] ?? "Video Detail").toString();
     final description =
-        (widget.videoData['description'] ?? "No description available.")
-            .toString();
+        (widget.videoData['content'] ?? "No description available.")
+            .toString(); // FIXED
 
     return AuthGuard(
       requiredRole: "User",

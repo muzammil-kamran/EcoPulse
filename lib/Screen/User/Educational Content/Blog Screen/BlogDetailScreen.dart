@@ -39,7 +39,7 @@ class BlogDetailScreen extends StatelessWidget {
                   blogData["image"] ??
                       "https://via.placeholder.com/400x200.png?text=Blog+Image",
                   width: double.infinity,
-                  height: 220,
+                  height: 300,
                   fit: BoxFit.cover,
                 ),
               ),

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecopulse/Screen/Admin/Users%20info/EditUserScreen.dart';
 import 'package:ecopulse/Screen/Auth/auth.dart';
+import 'package:ecopulse/Widget/AdminDrawer/AdminDrawer.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -47,6 +48,7 @@ class UsersScreen extends StatelessWidget {
           backgroundColor: kGreen,
           centerTitle: true,
         ),
+        drawer: const Admindrawer(),
         body: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance.collection("user").snapshots(),
           builder: (context, snapshot) {
